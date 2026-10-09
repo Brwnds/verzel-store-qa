@@ -10,9 +10,13 @@
 
 ## Resumo
 
-| Total de cenários | Passou | Falhou | Bugs abertos |
-|---|---|---|---|
-| **51** | **45** | **6** | **3** ([ver bugs](03-bugs.md)) |
+Este documento cobre os **critérios de aceite** do card (CT01 a CT51). Os testes **além dos critérios** (CT52 a CT72) estão em [05-testes-complementares.md](05-testes-complementares.md).
+
+| Escopo | Cenários | Passou | Falhou | Bugs |
+|---|---|---|---|---|
+| Critérios de aceite (este documento) | 51 | 45 | 6 | 3 (BUG-01 a BUG-03) |
+| Testes complementares | 21 | 17 | 4 | 4 (BUG-04 a BUG-07) |
+| **Total** | **72** | **62** | **10** | **7** ([ver bugs](03-bugs.md)) |
 
 | Critério de aceite | Resultado | Observação |
 |---|---|---|

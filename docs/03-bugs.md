@@ -5,6 +5,12 @@
 | [BUG-01](#bug-01) | Subtotal de exatamente R$ 200,00 cobra frete de R$ 19,90 | Alta | Alta | API (refletido na UI) | CA06, CA08 | Aberto |
 | [BUG-02](#bug-02) | API aceita mais de 5 unidades por produto e confirma o pedido | Alta | Alta | API | CA10 | Aberto |
 | [BUG-03](#bug-03) | Item sem `produtoId` retorna "Produto undefined não encontrado." | Baixa | Baixa | API | Códigos de erro | Aberto |
+| [BUG-04](#bug-04) | Remover o último item mantém o cupom, que volta aplicado sozinho | Baixa | Média | Interface (carrinho) | Teste complementar | Aberto |
+| [BUG-05](#bug-05) | Nome só com números é aceito como "nome e sobrenome" | Baixa | Baixa | Interface e API | Regra pré-existente | Aberto |
+| [BUG-06](#bug-06) | E-mail com pontos seguidos no domínio é aceito | Baixa | Baixa | Interface e API | Regra pré-existente | Aberto |
+| [BUG-07](#bug-07) | No celular, os links "Produtos" e "Documentação" ficam ocultos, sem menu alternativo | Baixa | Média | Interface (cabeçalho) | Teste complementar | Aberto |
+
+Os BUG-01 a BUG-03 vieram dos testes dos critérios de aceite ([02-execucao.md](02-execucao.md)). Os BUG-04 a BUG-07 vieram dos [testes complementares](05-testes-complementares.md).
 
 **Critério de severidade usado**
 - **Alta:** viola um critério de aceite, com impacto financeiro ou na regra de negócio.
@@ -158,3 +164,141 @@ Content-Type: application/json
 **Evidências**
 - [Log da API](evidencias/api-log.md#ct34---item-sem-produtoid---bug-03)
 - Automação: `tests/api/carrinho.api.spec.ts` › CT34
+
+---
+
+## BUG-04
+
+### Remover o último item mantém o cupom, que volta aplicado sozinho
+
+| | |
+|---|---|
+| **Severidade / Prioridade** | Baixa / Média |
+| **Componente** | Interface: carrinho (botão "Remover") |
+| **Cenário** | CT59 ([testes complementares](05-testes-complementares.md)) |
+
+**Passos para reproduzir**
+1. Adicionar 1 "Mochila Urbana 20L" e abrir o Carrinho.
+2. Aplicar o cupom `BEMVINDO10`.
+3. Clicar em **"Remover"** na mochila. O carrinho mostra "Seu carrinho está vazio".
+4. Voltar à vitrine e adicionar 1 "Kit 3 Pares de Meias".
+5. Abrir o Carrinho.
+
+**Resultado esperado:** o carrinho aparece sem cupom, com o campo "Cupom de desconto" vazio. É o que já acontece quando o carrinho é esvaziado pelo botão **"Esvaziar carrinho"** (CT60).
+
+**Resultado obtido:** o cupom `BEMVINDO10` aparece **aplicado sozinho**, com desconto de R$ 2,99. O cliente não aplicou cupom nesse carrinho.
+
+**Análise:** o botão "Remover" limpa os itens, mas mantém a chave `verzel-store:cupom` no `sessionStorage`. Já o "Esvaziar carrinho" limpa as duas chaves. Os dois caminhos levam ao mesmo estado (carrinho vazio) com resultados diferentes.
+
+**Impacto:** baixo para o cliente, que acaba recebendo um desconto a que já tinha direito. Mas o estado do carrinho fica imprevisível. Se o cupom fosse de uso único, ou se tivesse expirado entre uma ação e outra, o cliente veria um erro sem ter aplicado nada.
+
+**Evidências**
+| 1. Cupom aplicado | 2. Último item removido | 3. Novo produto: cupom volta sozinho |
+|---|---|---|
+| ![](evidencias/img/CT59-BUG04-1-cupom-aplicado.png) | ![](evidencias/img/CT59-BUG04-2-carrinho-vazio.png) | ![](evidencias/img/CT59-BUG04-3-cupom-volta-sozinho.png) |
+
+- Comportamento correto do "Esvaziar carrinho", para comparação: [CT60](evidencias/img/CT60-esvaziar-limpa-cupom.png)
+- Automação: `tests/ui/complementares.spec.ts` › CT59
+
+---
+
+## BUG-05
+
+### Nome só com números é aceito como "nome e sobrenome"
+
+| | |
+|---|---|
+| **Severidade / Prioridade** | Baixa / Baixa |
+| **Componente** | Checkout (formulário) e API `POST /api/pedidos` |
+| **Referência** | Regra da loja: "O nome do cliente precisa ter nome e sobrenome." |
+| **Cenário** | CT68 |
+
+**Passos para reproduzir**
+1. Ter um item no carrinho e ir ao checkout.
+2. Preencher **Nome completo** com `123 456`, e-mail `maria@exemplo.com` e CEP `01310-100`.
+3. Clicar em "Confirmar pedido".
+
+**Resultado esperado:** a mensagem "Informe nome e sobrenome.", como já acontece com `Maria` ou `M S`.
+
+**Resultado obtido:** o pedido é confirmado e a tela diz **"Obrigado, 123."**. A API também aceita (`201`). `Maria 123` também é aceito.
+
+**Análise:** a validação parece checar apenas se existem duas palavras com ao menos 2 caracteres, sem exigir letras. Formulário e API têm a mesma regra, então a correção precisa ser feita nos dois.
+
+**Evidências**
+- [Confirmação "Obrigado, 123."](evidencias/img/CT68-BUG05-nome-numerico-confirmado.png)
+- [Log da API](evidencias/api-log.md#ct68---nome-só-com-números-123-456---bug-05)
+- Automação: `tests/api/produtos-pedidos.api.spec.ts` › CT68
+
+![BUG-05](evidencias/img/CT68-BUG05-nome-numerico-confirmado.png)
+
+---
+
+## BUG-06
+
+### E-mail com pontos seguidos no domínio é aceito
+
+| | |
+|---|---|
+| **Severidade / Prioridade** | Baixa / Baixa |
+| **Componente** | Checkout (formulário) e API `POST /api/pedidos` |
+| **Referência** | Regra da loja: "O e-mail precisa ter um formato válido." |
+| **Cenário** | CT69 |
+
+**Passos para reproduzir**
+```http
+POST /api/pedidos
+Content-Type: application/json
+
+{
+  "cliente": { "nome": "Maria Silva", "email": "maria@exemplo..com", "cep": "01310-100" },
+  "itens": [ { "produtoId": "P006", "quantidade": 1 } ]
+}
+```
+Pelo formulário de checkout o resultado é o mesmo.
+
+**Resultado esperado:** `422 DADOS_INVALIDOS` com "Informe um e-mail válido.". Um domínio com dois pontos seguidos (`exemplo..com`) não é um endereço válido e o e-mail nunca seria entregue.
+
+**Resultado obtido:** `201`, pedido confirmado.
+
+**Análise:** outros formatos inválidos são recusados corretamente (`maria@`, `maria@exemplo`, `maria@@exemplo.com`). Só o caso de pontos consecutivos passa.
+
+**Evidências**
+- [Log da API](evidencias/api-log.md#ct69---e-mail-com-pontos-seguidos-mariaexemplocom---bug-06)
+- [Tabela formulário x API](evidencias/api-log.md#ct70---validação-do-formulário-x-validação-da-api)
+- Automação: `tests/api/produtos-pedidos.api.spec.ts` › CT69
+
+---
+
+## BUG-07
+
+### No celular, os links "Produtos" e "Documentação" ficam ocultos, sem menu alternativo
+
+| | |
+|---|---|
+| **Severidade / Prioridade** | Baixa / Média |
+| **Componente** | Interface: cabeçalho (`nav.navegacao`) |
+| **Ambiente** | iPhone 12 (390px) e Galaxy S9+ (320px), emulados no Chromium |
+| **Cenário** | CT72 |
+
+**Passos para reproduzir**
+1. Abrir a loja em um celular ou com a janela do navegador com menos de 600px de largura.
+2. Olhar o menu do cabeçalho em qualquer página.
+
+**Resultado esperado:** acesso a "Produtos", "Documentação" e "Carrinho", seja visível ou por um botão de menu (☰).
+
+**Resultado obtido:** só aparece **"Carrinho"**. Os links "Produtos" e "Documentação" estão com `display: none` e não existe botão de menu. Em 600px ou mais, os três links aparecem.
+
+| Largura | Produtos | Documentação | Carrinho |
+|---|---|---|---|
+| 320px | oculto | oculto | visível |
+| 390px | oculto | oculto | visível |
+| 600px ou mais | visível | visível | visível |
+
+**Impacto:** a navegação no celular fica incompleta. A vitrine só é acessível pelo logo, e a documentação pelo link da faixa do topo. Quem não sabe que o logo é clicável não acha o caminho de volta para os produtos.
+
+**Evidências**
+- [Cabeçalho no iPhone 12](evidencias/img/CT72-BUG07-menu-oculto-celular.png)
+- [Tabela por aparelho e página](evidencias/api-log.md#ct65---celular-largura-da-página-x-largura-da-tela)
+- Automação: `tests/ui/complementares.spec.ts` › CT72
+
+![BUG-07](evidencias/img/CT72-BUG07-menu-oculto-celular.png)

@@ -2,7 +2,7 @@
 //   - img/*.png      screenshots da interface, um por cenário
 //   - api-log.md     requisição e resposta de cada chamada de API, agrupadas por cenário
 // Uso: npm run evidencias
-import { chromium } from '@playwright/test';
+import { chromium, firefox, webkit, devices } from '@playwright/test';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -190,9 +190,144 @@ async function coletarUi() {
   await browser.close();
 }
 
+// ---------------------------------------------------------------- testes complementares (CT52 a CT71)
+const consistencia = [];
+const mobile = [];
+async function coletarComplementares() {
+  const P = '/api/pedidos';
+  await api('CT68', 'Nome só com números (123 456) - BUG-05', 'POST', P, { cliente: { ...CLIENTE, nome: '123 456' }, itens: [{ produtoId: 'P006', quantidade: 1 }] });
+  await api('CT69', 'E-mail com pontos seguidos (maria@exemplo..com) - BUG-06', 'POST', P, { cliente: { ...CLIENTE, email: 'maria@exemplo..com' }, itens: [{ produtoId: 'P006', quantidade: 1 }] });
+
+  const browser = await chromium.launch();
+  const vitrineAdd = (page, id) => page.locator('article', { has: page.locator('#nome-' + id) }).getByRole('button', { name: 'Adicionar ao carrinho' });
+
+  // CT52 - contador soma produtos diferentes
+  { const ctx = await contexto(browser); const page = await ctx.newPage();
+    await page.goto(BASE + '/', { waitUntil: 'networkidle' });
+    for (const id of ['P001', 'P002', 'P002', 'P006']) { await vitrineAdd(page, id).click(); await page.waitForTimeout(250); }
+    await destacar(page, '.link-carrinho'); await page.screenshot({ path: join(IMG, 'CT52-contador-produtos-diferentes.png') });
+    await ctx.close(); }
+
+  // CT55 - botão da vitrine volta a habilitar depois de reduzir no carrinho
+  { const ctx = await contexto(browser, [{ produtoId: 'P004', quantidade: 5 }]); const page = await ctx.newPage();
+    await page.goto(BASE + '/carrinho', { waitUntil: 'networkidle' }); await esperarResumo(page);
+    await page.getByRole('button', { name: 'Diminuir quantidade de Boné Aba Curva' }).click(); await page.waitForTimeout(600);
+    await page.goto(BASE + '/', { waitUntil: 'networkidle' });
+    await destacar(page, 'article:has(#nome-P004)'); await page.locator('#nome-P004').scrollIntoViewIfNeeded();
+    await page.screenshot({ path: join(IMG, 'CT55-vitrine-reabilita-apos-reduzir.png') });
+    await ctx.close(); }
+
+  // CT57/CT58 - cupom aplicado e quantidade cruzando R$ 200,00
+  await carrinho(browser, 'CT57-cupom-quantidade-sobe-acima-200', [{ produtoId: 'P002', quantidade: 1 }], async p => {
+    await aplicar(p, 'BEMVINDO10');
+    await p.getByRole('button', { name: 'Aumentar quantidade de Calça Jeans Slim' }).click(); await p.waitForTimeout(800);
+  }, '.resumo');
+  await carrinho(browser, 'CT58-cupom-quantidade-desce-abaixo-200', [{ produtoId: 'P002', quantidade: 2 }], async p => {
+    await aplicar(p, 'BEMVINDO10');
+    await p.getByRole('button', { name: 'Diminuir quantidade de Calça Jeans Slim' }).click(); await p.waitForTimeout(800);
+  }, '.resumo');
+
+  // CT59 - BUG-04: remover o último item mantém o cupom; ao adicionar outro produto ele volta aplicado
+  { const ctx = await contexto(browser, [{ produtoId: 'P005', quantidade: 1 }]); const page = await ctx.newPage();
+    await page.goto(BASE + '/carrinho', { waitUntil: 'networkidle' }); await esperarResumo(page);
+    await aplicar(page, 'BEMVINDO10'); await esperarResumo(page);
+    await destacar(page, '.resumo'); await foto(page, 'CT59-BUG04-1-cupom-aplicado');
+    await page.getByRole('button', { name: 'Remover Mochila Urbana 20L do carrinho' }).click(); await page.waitForTimeout(700);
+    await foto(page, 'CT59-BUG04-2-carrinho-vazio');
+    await page.goto(BASE + '/', { waitUntil: 'networkidle' }); await vitrineAdd(page, 'P006').click(); await page.waitForTimeout(400);
+    await page.goto(BASE + '/carrinho', { waitUntil: 'networkidle' }); await esperarResumo(page);
+    await destacar(page, '.resumo'); await foto(page, 'CT59-BUG04-3-cupom-volta-sozinho');
+    await ctx.close(); }
+  // CT60 - "Esvaziar carrinho" apaga o cupom (comportamento de referência)
+  { const ctx = await contexto(browser, [{ produtoId: 'P005', quantidade: 1 }], 'BEMVINDO10'); const page = await ctx.newPage();
+    await page.goto(BASE + '/carrinho', { waitUntil: 'networkidle' }); await esperarResumo(page);
+    await page.getByRole('button', { name: 'Esvaziar carrinho' }).click(); await page.waitForTimeout(500);
+    await page.goto(BASE + '/', { waitUntil: 'networkidle' }); await vitrineAdd(page, 'P006').click(); await page.waitForTimeout(400);
+    await page.goto(BASE + '/carrinho', { waitUntil: 'networkidle' }); await esperarResumo(page);
+    await destacar(page, '.resumo'); await foto(page, 'CT60-esvaziar-limpa-cupom');
+    await ctx.close(); }
+
+  // CT64 - menu "Nesta página" da documentação
+  { const ctx = await contexto(browser); const page = await ctx.newPage();
+    await page.goto(BASE + '/documentacao', { waitUntil: 'networkidle' });
+    await page.locator('aside.doc-indice').getByRole('link', { name: 'Códigos de erro' }).click(); await page.waitForTimeout(600);
+    await page.screenshot({ path: join(IMG, 'CT64-documentacao-ancora-codigos-erro.png') });
+    await ctx.close(); }
+
+  // CT66 - foco visível na navegação por teclado
+  { const ctx = await contexto(browser); const page = await ctx.newPage();
+    await page.goto(BASE + '/', { waitUntil: 'networkidle' });
+    for (let i = 0; i < 7; i++) await page.keyboard.press('Tab');
+    await page.keyboard.press('Enter'); await page.waitForTimeout(400);
+    await page.screenshot({ path: join(IMG, 'CT66-teclado-foco-e-enter.png') });
+    await ctx.close(); }
+
+  // CT68 - BUG-05: pedido confirmado com nome "123 456"
+  { const ctx = await contexto(browser, [{ produtoId: 'P006', quantidade: 1 }]); const page = await ctx.newPage();
+    await page.goto(BASE + '/checkout', { waitUntil: 'networkidle' });
+    await page.fill('#campo-nome', '123 456'); await page.fill('#campo-email', CLIENTE.email); await page.fill('#campo-cep', CLIENTE.cep);
+    await page.getByRole('button', { name: 'Confirmar pedido' }).click(); await page.waitForURL('**/pedido-confirmado');
+    await page.getByText('Pedido confirmado', { exact: true }).waitFor();
+    await destacar(page, 'main p:has-text("Obrigado")'); await foto(page, 'CT68-BUG05-nome-numerico-confirmado');
+    await ctx.close(); }
+
+  // CT70 - validação do formulário x validação da API
+  const entradas = [['nome', 'Maria 123'], ['nome', '123 456'], ['nome', 'M S'], ['email', 'maria@exemplo'], ['email', 'maria@@exemplo.com'], ['email', 'maria@exemplo..com'], ['email', 'a@b.c'], ['cep', '01310-10a'], ['cep', '01.310-100'], ['cep', '00000-000']];
+  for (const [campo, valor] of entradas) {
+    const dados = { ...CLIENTE, [campo]: valor };
+    const r = await fetch(BASE + P, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cliente: dados, itens: [{ produtoId: 'P006', quantidade: 1 }] }) });
+    const ctx = await contexto(browser, [{ produtoId: 'P006', quantidade: 1 }]); const page = await ctx.newPage();
+    await page.goto(BASE + '/checkout', { waitUntil: 'networkidle' });
+    await page.fill('#campo-nome', dados.nome); await page.fill('#campo-email', dados.email); await page.fill('#campo-cep', dados.cep);
+    await page.getByRole('button', { name: 'Confirmar pedido' }).click(); await page.waitForTimeout(1500);
+    const front = page.url().endsWith('/pedido-confirmado') ? 'aceita' : 'recusa';
+    const apiRes = r.status === 201 ? 'aceita' : 'recusa';
+    consistencia.push(`| ${campo} | \`${valor}\` | ${front} | ${apiRes} (${r.status}) | ${front === apiRes ? 'Sim' : '**Não**'} |`);
+    await ctx.close();
+  }
+  await browser.close();
+
+  // CT65 - celular: sem rolagem horizontal
+  for (const nome of ['iPhone 12', 'Galaxy S9+']) {
+    const b = await chromium.launch(); const ctx = await b.newContext({ ...devices[nome] });
+    await ctx.addInitScript(() => { if (!sessionStorage.getItem('qa:preparado')) { sessionStorage.setItem('verzel-store:itens', '[{"produtoId":"P002","quantidade":1},{"produtoId":"P004","quantidade":2}]'); sessionStorage.setItem('qa:preparado', '1'); } });
+    const page = await ctx.newPage();
+    for (const rota of ['/', '/carrinho', '/checkout', '/documentacao']) {
+      await page.goto(BASE + rota, { waitUntil: 'networkidle' });
+      const { sw, cw } = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth }));
+      const menu = await page.evaluate(() => [...document.querySelectorAll('nav.navegacao a')].filter(a => getComputedStyle(a).display !== 'none').map(a => a.childNodes[0].textContent.trim()).join(', '));
+      mobile.push(`| ${nome} | ${rota} | ${cw}px | ${sw}px | ${sw > cw ? '**Rolagem horizontal**' : 'OK'} | ${menu} |`);
+      if (nome === 'iPhone 12' && rota !== '/documentacao') await page.screenshot({ path: join(IMG, `CT65-mobile${rota === '/' ? '-vitrine' : rota.replace('/', '-')}.png`), fullPage: true });
+    }
+    // CT72 - BUG-07: no celular o menu só mostra "Carrinho"
+    if (nome === 'iPhone 12') {
+      await page.goto(BASE + '/carrinho', { waitUntil: 'networkidle' });
+      await destacar(page, 'header.cabecalho');
+      await page.screenshot({ path: join(IMG, 'CT72-BUG07-menu-oculto-celular.png') });
+    }
+    await b.close();
+  }
+
+  // CT67 - Firefox e WebKit (Safari): compra completa com cupom
+  for (const [nome, tipo] of [['firefox', firefox], ['webkit', webkit]]) {
+    const b = await tipo.launch(); const ctx = await b.newContext({ viewport: { width: 1280, height: 900 } }); const page = await ctx.newPage();
+    await page.goto(BASE + '/', { waitUntil: 'networkidle' });
+    await vitrineAdd(page, 'P005').click(); await page.waitForTimeout(400);
+    await page.goto(BASE + '/carrinho', { waitUntil: 'networkidle' }); await esperarResumo(page);
+    await aplicar(page, ' bemvindo10 ');
+    await page.getByRole('link', { name: 'Finalizar compra' }).click(); await page.waitForLoadState('networkidle');
+    await page.fill('#campo-nome', CLIENTE.nome); await page.fill('#campo-email', CLIENTE.email); await page.fill('#campo-cep', CLIENTE.cep);
+    await page.getByRole('button', { name: 'Confirmar pedido' }).click(); await page.waitForURL('**/pedido-confirmado');
+    await page.getByText('Pedido confirmado', { exact: true }).waitFor();
+    await foto(page, `CT67-${nome}-pedido-confirmado`);
+    await b.close();
+  }
+}
+
 // ---------------------------------------------------------------- saída
 const linhasCa11 = await coletarApi();
 await coletarUi();
+await coletarComplementares();
 
 const blocos = log.map(l => [
   `### ${l.ct} - ${l.titulo}`,
@@ -218,6 +353,20 @@ writeFileSync(join(RAIZ, 'api-log.md'), [
   '| # | Itens | Esperado (subtotal / desconto / total) | Obtido | Resultado |',
   '|---|---|---|---|---|',
   ...linhasCa11,
+  '',
+  '## CT70 - Validação do formulário x validação da API',
+  '',
+  'Cada valor foi enviado pelo formulário de checkout e direto para `POST /api/pedidos` (demais campos válidos).',
+  '',
+  '| Campo | Valor | Formulário | API | Consistente? |',
+  '|---|---|---|---|---|',
+  ...consistencia,
+  '',
+  '## CT65 - Celular: largura da página x largura da tela',
+  '',
+  '| Aparelho | Página | Largura da tela | Largura do conteúdo | Rolagem | Links visíveis no menu |',
+  '|---|---|---|---|---|---|',
+  ...mobile,
   '',
   '## CT01 - Requisições feitas pela interface ao clicar uma vez em "Aplicar cupom"',
   '',

@@ -1,6 +1,6 @@
 # Log das chamadas de API
 
-Gerado por `npm run evidencias` em 2026-10-09T16:29:35.554Z contra https://verzel-store.qa-test-verzel-store.workers.dev.
+Gerado por `npm run evidencias` em 2026-10-09T20:59:03.694Z contra https://verzel-store.qa-test-verzel-store.workers.dev.
 
 ## CT25 - CA11: 40 carrinhos com cupom comparados com cálculo exato em centavos
 
@@ -46,6 +46,36 @@ Gerado por `npm run evidencias` em 2026-10-09T16:29:35.554Z contra https://verze
 | 38 | P004x5 P005x5 P007x2 | 1209.30 / 120.93 / 1088.37 | 1209.3 / 120.93 / 1088.37 | OK |
 | 39 | P007x1 P008x4 | 429.90 / 42.99 / 386.91 | 429.9 / 42.99 / 386.91 | OK |
 | 40 | P001x3 P002x4 P003x3 P005x3 P007x3 P008x4 | 2498.70 / 249.87 / 2248.83 | 2498.7 / 249.87 / 2248.83 | OK |
+
+## CT70 - Validação do formulário x validação da API
+
+Cada valor foi enviado pelo formulário de checkout e direto para `POST /api/pedidos` (demais campos válidos).
+
+| Campo | Valor | Formulário | API | Consistente? |
+|---|---|---|---|---|
+| nome | `Maria 123` | aceita | aceita (201) | Sim |
+| nome | `123 456` | aceita | aceita (201) | Sim |
+| nome | `M S` | recusa | recusa (422) | Sim |
+| email | `maria@exemplo` | recusa | recusa (422) | Sim |
+| email | `maria@@exemplo.com` | recusa | recusa (422) | Sim |
+| email | `maria@exemplo..com` | aceita | aceita (201) | Sim |
+| email | `a@b.c` | aceita | aceita (201) | Sim |
+| cep | `01310-10a` | recusa | recusa (422) | Sim |
+| cep | `01.310-100` | recusa | recusa (422) | Sim |
+| cep | `00000-000` | aceita | aceita (201) | Sim |
+
+## CT65 - Celular: largura da página x largura da tela
+
+| Aparelho | Página | Largura da tela | Largura do conteúdo | Rolagem | Links visíveis no menu |
+|---|---|---|---|---|---|
+| iPhone 12 | / | 390px | 390px | OK | Carrinho |
+| iPhone 12 | /carrinho | 390px | 390px | OK | Carrinho |
+| iPhone 12 | /checkout | 390px | 390px | OK | Carrinho |
+| iPhone 12 | /documentacao | 390px | 390px | OK | Carrinho |
+| Galaxy S9+ | / | 320px | 320px | OK | Carrinho |
+| Galaxy S9+ | /carrinho | 320px | 320px | OK | Carrinho |
+| Galaxy S9+ | /checkout | 320px | 320px | OK | Carrinho |
+| Galaxy S9+ | /documentacao | 320px | 320px | OK | Carrinho |
 
 ## CT01 - Requisições feitas pela interface ao clicar uma vez em "Aplicar cupom"
 
@@ -468,8 +498,8 @@ Resposta **201**
 
 ```json
 {
-  "numero": "VZ-366339",
-  "criadoEm": "2026-10-09T16:28:59.047Z",
+  "numero": "VZ-091334",
+  "criadoEm": "2026-10-09T20:57:23.171Z",
   "cliente": {
     "nome": "Maria Silva",
     "email": "maria@exemplo.com",
@@ -1059,8 +1089,8 @@ Resposta **201**
 
 ```json
 {
-  "numero": "VZ-048521",
-  "criadoEm": "2026-10-09T16:29:00.165Z",
+  "numero": "VZ-585427",
+  "criadoEm": "2026-10-09T20:57:24.115Z",
   "cliente": {
     "nome": "Maria Silva",
     "email": "maria@exemplo.com",
@@ -1134,8 +1164,8 @@ Resposta **201**
 
 ```json
 {
-  "numero": "VZ-424275",
-  "criadoEm": "2026-10-09T16:29:00.248Z",
+  "numero": "VZ-946189",
+  "criadoEm": "2026-10-09T20:57:24.193Z",
   "cliente": {
     "nome": "Maria Silva",
     "email": "maria@exemplo.com",
@@ -1156,6 +1186,82 @@ Resposta **201**
   "freteGratis": false,
   "valorFaltanteFreteGratis": 100,
   "total": 119.9,
+  "cupom": null
+}
+```
+
+### CT68 - Nome só com números (123 456) - BUG-05
+
+`POST /api/pedidos`
+
+```json
+{"cliente":{"nome":"123 456","email":"maria@exemplo.com","cep":"01310-100"},"itens":[{"produtoId":"P006","quantidade":1}]}
+```
+
+Resposta **201**
+
+```json
+{
+  "numero": "VZ-117865",
+  "criadoEm": "2026-10-09T20:58:08.865Z",
+  "cliente": {
+    "nome": "123 456",
+    "email": "maria@exemplo.com",
+    "cep": "01310100"
+  },
+  "itens": [
+    {
+      "produtoId": "P006",
+      "nome": "Kit 3 Pares de Meias",
+      "precoUnitario": 29.9,
+      "quantidade": 1,
+      "total": 29.9
+    }
+  ],
+  "subtotal": 29.9,
+  "desconto": 0,
+  "frete": 19.9,
+  "freteGratis": false,
+  "valorFaltanteFreteGratis": 170.1,
+  "total": 49.8,
+  "cupom": null
+}
+```
+
+### CT69 - E-mail com pontos seguidos (maria@exemplo..com) - BUG-06
+
+`POST /api/pedidos`
+
+```json
+{"cliente":{"nome":"Maria Silva","email":"maria@exemplo..com","cep":"01310-100"},"itens":[{"produtoId":"P006","quantidade":1}]}
+```
+
+Resposta **201**
+
+```json
+{
+  "numero": "VZ-234309",
+  "criadoEm": "2026-10-09T20:58:08.960Z",
+  "cliente": {
+    "nome": "Maria Silva",
+    "email": "maria@exemplo..com",
+    "cep": "01310100"
+  },
+  "itens": [
+    {
+      "produtoId": "P006",
+      "nome": "Kit 3 Pares de Meias",
+      "precoUnitario": 29.9,
+      "quantidade": 1,
+      "total": 29.9
+    }
+  ],
+  "subtotal": 29.9,
+  "desconto": 0,
+  "frete": 19.9,
+  "freteGratis": false,
+  "valorFaltanteFreteGratis": 170.1,
+  "total": 49.8,
   "cupom": null
 }
 ```

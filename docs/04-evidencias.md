@@ -35,6 +35,20 @@ Total R$ 199,90; o esperado era R$ 180,00.
 ### BUG-02 e BUG-03: evidências de API
 Ver [CT21](evidencias/api-log.md#ct21---6-unidades-no-cálculo---bug-02), [CT22](evidencias/api-log.md#ct22---pedido-com-6-unidades---bug-02) e [CT34](evidencias/api-log.md#ct34---item-sem-produtoid---bug-03) no log da API.
 
+### BUG-04: cupom volta sozinho depois de remover o último item (CT59)
+| 1. Cupom aplicado | 2. Último item removido | 3. Novo produto: cupom volta sozinho |
+|---|---|---|
+| ![](evidencias/img/CT59-BUG04-1-cupom-aplicado.png) | ![](evidencias/img/CT59-BUG04-2-carrinho-vazio.png) | ![](evidencias/img/CT59-BUG04-3-cupom-volta-sozinho.png) |
+
+### BUG-05: pedido confirmado com nome "123 456" (CT68)
+![CT68](evidencias/img/CT68-BUG05-nome-numerico-confirmado.png)
+
+### BUG-06: e-mail com ".." aceito (CT69)
+Ver [CT69](evidencias/api-log.md#ct69---e-mail-com-pontos-seguidos-mariaexemplocom---bug-06) no log da API.
+
+### BUG-07: menu incompleto no celular (CT72)
+![CT72](evidencias/img/CT72-BUG07-menu-oculto-celular.png)
+
 ---
 
 ## Cupom de desconto
@@ -96,3 +110,31 @@ Ver [CT21](evidencias/api-log.md#ct21---6-unidades-no-cálculo---bug-02), [CT22]
 | CT50: confirmação sem pedido | CT51: página inexistente |
 |---|---|
 | ![](evidencias/img/CT50-confirmacao-sem-pedido.png) | ![](evidencias/img/CT51-pagina-inexistente.png) |
+
+---
+
+## Testes complementares (CT52 a CT72)
+
+Resultado de cada cenário em [05-testes-complementares.md](05-testes-complementares.md).
+
+| CT52: contador com produtos diferentes | CT55: botão reabilita depois de reduzir |
+|---|---|
+| ![](evidencias/img/CT52-contador-produtos-diferentes.png) | ![](evidencias/img/CT55-vitrine-reabilita-apos-reduzir.png) |
+
+| CT57: com cupom, sobe acima de R$ 200 | CT58: com cupom, desce abaixo de R$ 200 | CT60: "Esvaziar" limpa o cupom |
+|---|---|---|
+| ![](evidencias/img/CT57-cupom-quantidade-sobe-acima-200.png) | ![](evidencias/img/CT58-cupom-quantidade-desce-abaixo-200.png) | ![](evidencias/img/CT60-esvaziar-limpa-cupom.png) |
+
+| CT64: âncora da documentação | CT66: foco visível pelo teclado |
+|---|---|
+| ![](evidencias/img/CT64-documentacao-ancora-codigos-erro.png) | ![](evidencias/img/CT66-teclado-foco-e-enter.png) |
+
+| CT65: vitrine no iPhone 12 | CT65: carrinho no iPhone 12 | CT65: checkout no iPhone 12 |
+|---|---|---|
+| ![](evidencias/img/CT65-mobile-vitrine.png) | ![](evidencias/img/CT65-mobile-carrinho.png) | ![](evidencias/img/CT65-mobile-checkout.png) |
+
+| CT67: pedido confirmado no Firefox | CT67: pedido confirmado no WebKit (Safari) |
+|---|---|
+| ![](evidencias/img/CT67-firefox-pedido-confirmado.png) | ![](evidencias/img/CT67-webkit-pedido-confirmado.png) |
+
+Tabelas de apoio no log: [CT65, celular](evidencias/api-log.md#ct65---celular-largura-da-página-x-largura-da-tela) e [CT70, formulário x API](evidencias/api-log.md#ct70---validação-do-formulário-x-validação-da-api).

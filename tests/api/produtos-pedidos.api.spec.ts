@@ -55,6 +55,20 @@ test.describe('API POST /api/pedidos', () => {
     expect(erro.campos.map((c: { campo: string }) => c.campo)).toEqual(['cliente.nome', 'cliente.email', 'cliente.cep']);
   });
 
+  test('CT68 - nome só com números é recusado @BUG-05', async ({ request }) => {
+    test.info().annotations.push({ type: 'bug', description: 'BUG-05: nome "123 456" é aceito como nome e sobrenome' });
+    test.fail();
+    const res = await request.post('/api/pedidos', { data: { cliente: { ...CLIENTE, nome: '123 456' }, itens: [{ produtoId: 'P006', quantidade: 1 }] } });
+    expect(res.status()).toBe(422);
+  });
+
+  test('CT69 - e-mail com pontos seguidos no domínio é recusado @BUG-06', async ({ request }) => {
+    test.info().annotations.push({ type: 'bug', description: 'BUG-06: e-mail "maria@exemplo..com" é aceito' });
+    test.fail();
+    const res = await request.post('/api/pedidos', { data: { cliente: { ...CLIENTE, email: 'maria@exemplo..com' }, itens: [{ produtoId: 'P006', quantidade: 1 }] } });
+    expect(res.status()).toBe(422);
+  });
+
   test('CT22 - pedido com 6 unidades de um produto é recusado @CA10 @BUG-02', async ({ request }) => {
     test.info().annotations.push({ type: 'bug', description: 'BUG-02: API confirma pedido com mais de 5 unidades por produto' });
     test.fail();
