@@ -12,9 +12,10 @@
     "test:headed": "playwright test --project=ui --headed",
     "report": "playwright show-report",
     "evidencias": "node scripts/coletar-evidencias.mjs",
-    "test:postman": "npx -y newman@6.2.1 run docs/postman/verzel-store.postman_collection.json"
+    "test:postman": "node --no-deprecation node_modules/newman/bin/newman.js run docs/postman/verzel-store.postman_collection.json"
   },
   "devDependencies": {
-    "@playwright/test": "^1.48.2"
+    "@playwright/test": "^1.48.2",
+    "newman": "^6.2.1"
   }
 }

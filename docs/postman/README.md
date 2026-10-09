@@ -28,7 +28,7 @@ A URL da loja já vem configurada na variável `baseUrl` da coleção. Não é p
 npm run test:postman
 ```
 
-Esse comando usa o [Newman](https://github.com/postmanlabs/newman), a versão de linha de comando do Postman. O resultado da última execução está em [`resultado-newman.txt`](resultado-newman.txt).
+Esse comando usa o [Newman](https://github.com/postmanlabs/newman), a versão de linha de comando do Postman, que é instalado junto com o `npm install`. O resultado da última execução está em [`resultado-newman.txt`](resultado-newman.txt).
 
 ## Organização
 

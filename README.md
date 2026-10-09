@@ -110,7 +110,3 @@ Os 9 testes que cobrem os bugs (**CT13** em UI e API, **CT21**, **CT22**, **CT34
 **Dentro do escopo:** todos os critérios de aceite (CA01 a CA11), as regras de cálculo, as regras pré-existentes do checkout (nome, e-mail, CEP), o contrato e os códigos de erro da API e, como teste complementar, as demais funcionalidades da loja: navegação, documentação, celular (320px e 390px), Firefox e WebKit (Safari) e navegação por teclado.
 
 **Fora do escopo** (conforme o enunciado e a seção "Sobre este ambiente"): testes de carga, estresse e segurança; login, cadastro, pagamento online e consulta de pedidos. Os comportamentos simplificados de propósito (carrinho por aba, pedido não armazenado, número fictício, sem estoque) foram apenas confirmados e **não** foram reportados como bug.
-
-## Uso de IA
-
-Usei o Claude (Anthropic) como assistente durante o teste: na leitura da documentação para levantar os cenários, para gerar os scripts de exploração da API e da interface, para escrever a automação Playwright e o script de evidências, e para revisar e organizar a documentação. Todos os resultados foram executados contra o ambiente real e conferidos nos screenshots e nas respostas da API antes de serem registrados.
