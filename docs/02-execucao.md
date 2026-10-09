@@ -38,13 +38,13 @@ Este documento cobre os **critérios de aceite** do card (CT01 a CT51). Os teste
 
 - **Manual:** roteiro do cenário seguido pela interface ou com chamadas diretas à API (Node `fetch`), com o resultado conferido contra a documentação.
 - **Exploratório:** sessões guiadas por um objetivo (ver a seção [Sessões exploratórias](#sessões-exploratórias)), buscando bordas que a documentação não detalha.
-- **Automatizado:** cenário também coberto pela suíte Playwright em [`tests/`](../tests). Os cenários com bug conhecido estão marcados com `test.fail()` (ver o [README](../README.md#bugs-conhecidos-na-automação)).
+- **Automatizado:** cenário também coberto pela suíte Playwright em [`tests/`](https://github.com/Brwnds/verzel-store-qa/tree/main/tests). Os cenários com bug conhecido estão marcados com `test.fail()` (ver o [README](https://github.com/Brwnds/verzel-store-qa#bugs-conhecidos-na-automação)).
 
 A coluna **Evidência** aponta para o screenshot em [`evidencias/img`](evidencias/img) ou para o trecho do [log da API](evidencias/api-log.md).
 
 ## Resultado por cenário
 
-### Cupom de desconto: [01-cupom.feature](01-cenarios/01-cupom.feature)
+### Cupom de desconto: [01-cupom.feature](https://github.com/Brwnds/verzel-store-qa/blob/main/docs/01-cenarios/01-cupom.feature)
 
 | ID | Cenário | CA | Tipo | Resultado | Evidência |
 |---|---|---|---|---|---|
@@ -59,7 +59,7 @@ A coluna **Evidência** aponta para o screenshot em [`evidencias/img`](evidencia
 | CT09 | Remover cupom e aplicar outro | CA05 | Manual + Automatizado | ✅ Passou | [img](evidencias/img/CT09-cupom-removido.png) |
 | CT10 | "BEM VINDO10", "BEMVINDO", "BEMVINDO100" são inválidos | CA02 | Exploratório | ✅ Passou | [api-log](evidencias/api-log.md#ct10---cupom-com-espaço-no-meio-bem-vindo10) |
 
-### Frete grátis: [02-frete.feature](01-cenarios/02-frete.feature)
+### Frete grátis: [02-frete.feature](https://github.com/Brwnds/verzel-store-qa/blob/main/docs/01-cenarios/02-frete.feature)
 
 | ID | Cenário | CA | Tipo | Resultado | Evidência |
 |---|---|---|---|---|---|
@@ -71,7 +71,7 @@ A coluna **Evidência** aponta para o screenshot em [`evidencias/img`](evidencia
 | CT16 | **R$ 200,00 com cupom → frete grátis, total R$ 180,00** | CA06/CA08 | Manual | ❌ **Falhou ([BUG-01](03-bugs.md#bug-01))**: total R$ 199,90 | [img](evidencias/img/CT16-BUG01-exato-200-cupom.png) |
 | CT17 | Desconto não incide no frete | CA09 | Manual + Automatizado | ✅ Passou | [api-log](evidencias/api-log.md#ct17---desconto-não-incide-no-frete) |
 
-### Limite de quantidade: [03-quantidade.feature](01-cenarios/03-quantidade.feature)
+### Limite de quantidade: [03-quantidade.feature](https://github.com/Brwnds/verzel-store-qa/blob/main/docs/01-cenarios/03-quantidade.feature)
 
 | ID | Cenário | CA | Tipo | Resultado | Evidência |
 |---|---|---|---|---|---|
@@ -82,7 +82,7 @@ A coluna **Evidência** aponta para o screenshot em [`evidencias/img`](evidencia
 | CT22 | **API de pedidos recusa 6 unidades** | CA10 | Manual + Automatizado | ❌ **Falhou ([BUG-02](03-bugs.md#bug-02))** | [api-log](evidencias/api-log.md#ct22---pedido-com-6-unidades---bug-02) |
 | CT23 | **Carrinho com 6 unidades não pode ser finalizado** | CA10 | Exploratório | ❌ **Falhou ([BUG-02](03-bugs.md#bug-02))** | [carrinho](evidencias/img/CT23-BUG02-carrinho-6-unidades.png) / [confirmação](evidencias/img/CT23-BUG02-pedido-6-unidades-confirmado.png) |
 
-### Cálculo e arredondamento: [04-calculo.feature](01-cenarios/04-calculo.feature)
+### Cálculo e arredondamento: [04-calculo.feature](https://github.com/Brwnds/verzel-store-qa/blob/main/docs/01-cenarios/04-calculo.feature)
 
 | ID | Cenário | CA | Tipo | Resultado | Evidência |
 |---|---|---|---|---|---|
@@ -90,7 +90,7 @@ A coluna **Evidência** aponta para o screenshot em [`evidencias/img`](evidencia
 | CT25 | 40 carrinhos variados com cupom batem com o cálculo exato | CA11 | Manual | ✅ Passou (0 divergências) | [api-log](evidencias/api-log.md#ct25---ca11-40-carrinhos-com-cupom-comparados-com-cálculo-exato-em-centavos) |
 | CT26 | P001 x3 → 17,97 / 181,63; P006 x1 → 2,99 / 46,81 | CA11 | Manual | ✅ Passou | [api-log](evidencias/api-log.md#ct26---arredondamento-p001-x3-com-cupom) |
 
-### Contrato e erros da API: [05-api.feature](01-cenarios/05-api.feature)
+### Contrato e erros da API: [05-api.feature](https://github.com/Brwnds/verzel-store-qa/blob/main/docs/01-cenarios/05-api.feature)
 
 | ID | Cenário | Tipo | Resultado | Evidência |
 |---|---|---|---|---|
@@ -110,7 +110,7 @@ A coluna **Evidência** aponta para o screenshot em [`evidencias/img`](evidencia
 | CT40 | Pedido com cupom expirado → 422 CUPOM_EXPIRADO | Manual + Automatizado | ✅ Passou | [api-log](evidencias/api-log.md#ct40---pedido-com-cupom-expirado) |
 | CT41 | Pedido válido → 201, número VZ-000000, CEP normalizado | Manual + Automatizado | ✅ Passou | [api-log](evidencias/api-log.md#ct41---pedido-válido-com-cupom-minúsculo-e-espaços) |
 
-### Checkout: [06-checkout.feature](01-cenarios/06-checkout.feature)
+### Checkout: [06-checkout.feature](https://github.com/Brwnds/verzel-store-qa/blob/main/docs/01-cenarios/06-checkout.feature)
 
 | ID | Cenário | Tipo | Resultado | Evidência |
 |---|---|---|---|---|
@@ -121,7 +121,7 @@ A coluna **Evidência** aponta para o screenshot em [`evidencias/img`](evidencia
 | CT46 | CEP só com números é aceito | Manual | ✅ Passou | [api-log](evidencias/api-log.md#ct46---pedido-com-cep-sem-hífen) |
 | CT47 | Cupom expirado no checkout bloqueia o pedido | Exploratório | ✅ Passou | [img](evidencias/img/CT47-checkout-cupom-expirado.png) |
 
-### Navegação e ambiente: [07-navegacao-ambiente.feature](01-cenarios/07-navegacao-ambiente.feature)
+### Navegação e ambiente: [07-navegacao-ambiente.feature](https://github.com/Brwnds/verzel-store-qa/blob/main/docs/01-cenarios/07-navegacao-ambiente.feature)
 
 | ID | Cenário | Tipo | Resultado | Evidência |
 |---|---|---|---|---|

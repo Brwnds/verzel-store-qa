@@ -6,7 +6,7 @@ Todas as evidências foram geradas em 09/10/2026 contra https://verzel-store.qa-
 npm run evidencias
 ```
 
-O script [`scripts/coletar-evidencias.mjs`](../scripts/coletar-evidencias.mjs) abre a loja no Chromium, executa cada cenário e salva:
+O script [`scripts/coletar-evidencias.mjs`](https://github.com/Brwnds/verzel-store-qa/blob/main/scripts/coletar-evidencias.mjs) abre a loja no Chromium, executa cada cenário e salva:
 
 - **Screenshots** em [`evidencias/img/`](evidencias/img). O contorno vermelho destaca a área verificada.
 - **Log da API** em [`evidencias/api-log.md`](evidencias/api-log.md), com a requisição e a resposta completas de cada cenário de API, a tabela dos 40 carrinhos do CT25 (CA11) e as requisições de rede da interface.
