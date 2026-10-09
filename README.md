@@ -1,5 +1,7 @@
 # Verzel Store: validação da entrega VZS-142 (cupom de desconto e frete grátis)
 
+[![Testes](https://github.com/Brwnds/verzel-store-qa/actions/workflows/testes.yml/badge.svg)](https://github.com/Brwnds/verzel-store-qa/actions/workflows/testes.yml)
+
 Teste técnico para a vaga de **QA Júnior** na Verzel, por **Brenda Beatriz Maciel da Silva**.
 
 Validação da entrega "Cupom de desconto e frete grátis" (card VZS-142, v2.3.0) da [Verzel Store](https://verzel-store.qa-test-verzel-store.workers.dev), feita a partir da [documentação da entrega](https://verzel-store.qa-test-verzel-store.workers.dev/documentacao).
@@ -33,10 +35,13 @@ Validação da entrega "Cupom de desconto e frete grátis" (card VZS-142, v2.3.0
 | Evidências da execução | [`docs/04-evidencias.md`](docs/04-evidencias.md): screenshots de cada cenário ([`img/`](docs/evidencias/img)) e [log completo da API](docs/evidencias/api-log.md) |
 | Automação com Playwright | [`tests/`](tests): 46 testes (25 de UI e 21 de API) |
 | Coleção Postman (extra) | [`docs/postman/`](docs/postman): 37 requisições com 123 verificações automáticas, incluindo a reprodução dos bugs de API ([como importar](docs/postman/README.md)) |
+| Pipeline de CI (extra) | [`.github/workflows/testes.yml`](.github/workflows/testes.yml): roda os testes Playwright e a coleção Postman no GitHub Actions ([execuções](https://github.com/Brwnds/verzel-store-qa/actions/workflows/testes.yml)) |
 | README | este arquivo |
 
 ```
 .
+├── .github/workflows/
+│   └── testes.yml            # pipeline de CI (GitHub Actions)
 ├── docs/
 │   ├── 01-cenarios/          # cenários em Gherkin (pt-BR)
 │   ├── 02-execucao.md        # relatório de execução
@@ -107,6 +112,19 @@ Os 9 testes que cobrem os bugs (**CT13** em UI e API, **CT21**, **CT22**, **CT34
 - **Pré-condição via `sessionStorage`:** a loja guarda o carrinho na aba (`verzel-store:itens`). Para os cenários que começam com "Dado que o carrinho tem...", o carrinho é preparado direto no storage, o que deixa os testes rápidos e independentes. O fluxo real pela vitrine é coberto em `quantidade.spec.ts` e no CT42 (compra completa).
 - **Esperas pela API, não por tempo fixo:** os testes aguardam a resposta de `/api/carrinho/calcular` e o `aria-busy="false"` do resumo antes de conferir valores.
 - **Ambiente compartilhado:** `workers: 2`, sem testes de carga, e cada teste roda em um contexto de navegador isolado, então um teste não interfere no carrinho de outro.
+
+### Integração contínua (GitHub Actions)
+
+O workflow [`.github/workflows/testes.yml`](.github/workflows/testes.yml) roda automaticamente a cada push ou pull request nas branches `main` e `develop`:
+
+1. Instala o Node.js, as dependências e o Chromium.
+2. Roda os 46 testes Playwright (`npm test`).
+3. Roda a coleção Postman via Newman (`npm run test:postman`).
+4. Publica o relatório HTML do Playwright como artefato da execução (disponível por 14 dias).
+
+O resultado aparece na aba [Actions](https://github.com/Brwnds/verzel-store-qa/actions/workflows/testes.yml) e no selo no topo deste README. Também é possível rodar manualmente pelo botão **Run workflow**.
+
+Para não gerar carga no ambiente compartilhado com outros candidatos, o pipeline **não tem agendamento** e ignora pushes que alteram só a documentação.
 
 ## Escopo
 
