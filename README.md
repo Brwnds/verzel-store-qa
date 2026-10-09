@@ -4,6 +4,8 @@ Teste técnico para a vaga de **QA Júnior** na Verzel, por **Brenda Beatriz Mac
 
 Validação da entrega "Cupom de desconto e frete grátis" (card VZS-142, v2.3.0) da [Verzel Store](https://verzel-store.qa-test-verzel-store.workers.dev), feita a partir da [documentação da entrega](https://verzel-store.qa-test-verzel-store.workers.dev/documentacao).
 
+**📄 Relatório navegável (GitHub Pages): https://brwnds.github.io/verzel-store-qa/**
+
 ## Resultado em uma linha
 
 **72 cenários executados: 62 passaram e 10 falharam, com 7 bugs abertos.** Dois deles violam critérios de aceite (CA06 e CA10), então a entrega **não está pronta para produção**.
@@ -77,6 +79,7 @@ Outros comandos:
 | `npm run test:api` | só os testes de API |
 | `npm run test:headed` | testes de interface com o navegador visível |
 | `npm run report` | abre o relatório HTML da última execução (com screenshot de cada teste) |
+| `npm run relatorio:pages` | copia o relatório HTML da última execução do Playwright para o site (`docs/relatorio-playwright`) |
 | `npm run evidencias` | regera os screenshots e o log da API em `docs/evidencias/` (antes, rode `npx playwright install` para baixar também o Firefox e o WebKit) |
 | `npm run test:postman` | roda a coleção Postman pelo terminal (via Newman), sem abrir o Postman |
 | `npx playwright test --grep @CA10` | roda só os testes de um critério de aceite (ou `--grep @BUG-01` para um bug) |

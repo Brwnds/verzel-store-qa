@@ -8,7 +8,7 @@ Testes **além dos critérios de aceite** do card VZS-142. O objetivo foi verifi
 | **Data** | 09/10/2026 |
 | **Navegadores** | Chromium, Firefox e WebKit (motor do Safari), via Playwright 1.48 |
 | **Dispositivos** | Desktop 1280x900, iPhone 12 (390px) e Galaxy S9+ (320px) |
-| **Cenários** | [08-complementares.feature](01-cenarios/08-complementares.feature) |
+| **Cenários** | [08-complementares.feature](https://github.com/Brwnds/verzel-store-qa/blob/main/docs/01-cenarios/08-complementares.feature) |
 
 ## Resumo
 

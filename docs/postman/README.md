@@ -41,7 +41,7 @@ Esse comando usa o [Newman](https://github.com/postmanlabs/newman), a versão de
 | 05 - Pedidos | Pedido válido, CEP, cupom inválido/expirado, dados do cliente | 5 |
 | 06 - Bugs (reprodução) | BUG-01, BUG-02 (x2), BUG-03, BUG-05, BUG-06 | 6 |
 
-Os nomes das requisições usam os mesmos IDs dos cenários (CT01, CT13...) de [`docs/01-cenarios`](../01-cenarios) e do [relatório de execução](../02-execucao.md). A descrição de cada requisição diz o que é esperado.
+Os nomes das requisições usam os mesmos IDs dos cenários (CT01, CT13...) de [`docs/01-cenarios`](https://github.com/Brwnds/verzel-store-qa/tree/main/docs/01-cenarios) e do [relatório de execução](../02-execucao.md). A descrição de cada requisição diz o que é esperado.
 
 ## Sobre a pasta "06 - Bugs"
 

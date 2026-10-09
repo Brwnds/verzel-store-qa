@@ -1,0 +1,8 @@
+title: Verzel Store · Relatório de QA
+description: Validação da entrega VZS-142 (cupom de desconto e frete grátis) · Teste técnico QA Júnior
+theme: jekyll-theme-cayman
+lang: pt-BR
+
+# converte links entre arquivos .md em links para as páginas .html geradas
+relative_links:
+  enabled: true
