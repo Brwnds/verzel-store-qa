@@ -30,6 +30,7 @@ Validação da entrega "Cupom de desconto e frete grátis" (card VZS-142, v2.3.0
 | Report dos bugs | [`docs/03-bugs.md`](docs/03-bugs.md): 7 bugs com passos, esperado x obtido, severidade, análise e evidências |
 | Evidências da execução | [`docs/04-evidencias.md`](docs/04-evidencias.md): screenshots de cada cenário ([`img/`](docs/evidencias/img)) e [log completo da API](docs/evidencias/api-log.md) |
 | Automação com Playwright | [`tests/`](tests): 46 testes (25 de UI e 21 de API) |
+| Coleção Postman (extra) | [`docs/postman/`](docs/postman): 37 requisições com 123 verificações automáticas, incluindo a reprodução dos bugs de API ([como importar](docs/postman/README.md)) |
 | README | este arquivo |
 
 ```
@@ -40,6 +41,7 @@ Validação da entrega "Cupom de desconto e frete grátis" (card VZS-142, v2.3.0
 │   ├── 03-bugs.md            # bugs encontrados
 │   ├── 04-evidencias.md      # índice visual das evidências
 │   ├── 05-testes-complementares.md  # testes além dos critérios de aceite
+│   ├── postman/              # coleção Postman + resultado da execução
 │   └── evidencias/
 │       ├── img/              # screenshots por cenário
 │       └── api-log.md        # requisições e respostas da API
@@ -76,6 +78,7 @@ Outros comandos:
 | `npm run test:headed` | testes de interface com o navegador visível |
 | `npm run report` | abre o relatório HTML da última execução (com screenshot de cada teste) |
 | `npm run evidencias` | regera os screenshots e o log da API em `docs/evidencias/` (antes, rode `npx playwright install` para baixar também o Firefox e o WebKit) |
+| `npm run test:postman` | roda a coleção Postman pelo terminal (via Newman), sem abrir o Postman |
 | `npx playwright test --grep @CA10` | roda só os testes de um critério de aceite (ou `--grep @BUG-01` para um bug) |
 
 Para apontar para outro ambiente: `BASE_URL=https://outro-endereco npm test`.

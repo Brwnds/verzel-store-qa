@@ -1,0 +1,265 @@
+(node:18428) [DEP0176] DeprecationWarning: fs.F_OK is deprecated, use fs.constants.F_OK instead
+(Use `node --trace-deprecation ...` to show where the warning was created)
+newman
+
+Verzel Store - VZS-142 (cupom e frete grátis)
+
+□ 01 - Produtos
+└ CT27 - Listar produtos
+  GET https://verzel-store.qa-test-verzel-store.workers.dev/api/produtos [200 OK, 1.85kB, 159ms]
+  √  Status 200
+  √  8 produtos
+  √  Preços iguais aos da documentação
+
+└ Consultar produto P001
+  GET https://verzel-store.qa-test-verzel-store.workers.dev/api/produtos/P001 [200 OK, 897B, 53ms]
+  √  Status 200
+  √  id = 'P001'
+  √  nome = 'Camiseta Essencial'
+  √  preco = 59.9
+
+└ CT28 - Produto inexistente
+  GET https://verzel-store.qa-test-verzel-store.workers.dev/api/produtos/P999 [404 Not Found, 854B, 38ms]
+  √  Status 404
+  √  Código de erro PRODUTO_NAO_ENCONTRADO
+
+□ 02 - Carrinho: cupom
+└ CT24 - Exemplo da documentação
+  POST https://verzel-store.qa-test-verzel-store.workers.dev/api/carrinho/calcular [200 OK, 1.19kB, 49ms]
+  √  Status 200
+  √  subtotal = 239.7
+  √  desconto = 23.97
+  √  frete = 0
+  √  freteGratis = true
+  √  valorFaltanteFreteGratis = 0
+  √  total = 215.73
+  √  Cupom aplicado
+
+└ CT01 - BEMVINDO10 dá 10%
+  POST https://verzel-store.qa-test-verzel-store.workers.dev/api/carrinho/calcular [200 OK, 1.09kB, 38ms]
+  √  Status 200
+  √  subtotal = 100
+  √  desconto = 10
+  √  frete = 19.9
+  √  total = 109.9
+
+└ CT02 - Minúsculas e espaços nas pontas
+  POST https://verzel-store.qa-test-verzel-store.workers.dev/api/carrinho/calcular [200 OK, 1.1kB, 36ms]
+  √  Status 200
+  √  Código normalizado para BEMVINDO10
+  √  Cupom aplicado
+  √  desconto = 10
+
+└ CT03 - Letras misturadas
+  POST https://verzel-store.qa-test-verzel-store.workers.dev/api/carrinho/calcular [200 OK, 1.09kB, 42ms]
+  √  Status 200
+  √  Cupom aplicado
+  √  desconto = 10
+
+└ CT38 - Cupom inexistente
+  POST https://verzel-store.qa-test-verzel-store.workers.dev/api/carrinho/calcular [200 OK, 1.05kB, 39ms]
+  √  Status 200
+  √  desconto = 0
+  √  total = 119.9
+  √  Mensagem 'Cupom inválido.'
+  √  Cupom não aplicado
+
+└ CT38 - Cupom expirado
+  POST https://verzel-store.qa-test-verzel-store.workers.dev/api/carrinho/calcular [200 OK, 1.05kB, 40ms]
+  √  Status 200
+  √  desconto = 0
+  √  total = 119.9
+  √  Mensagem 'Cupom expirado.'
+
+└ CT10 - Espaço no meio do código
+  POST https://verzel-store.qa-test-verzel-store.workers.dev/api/carrinho/calcular [200 OK, 1.07kB, 39ms]
+  √  Status 200
+  √  desconto = 0
+  √  Mensagem 'Cupom inválido.'
+
+□ 03 - Carrinho: frete e cálculo
+└ CT11 - Abaixo de R$ 200,00
+  POST https://verzel-store.qa-test-verzel-store.workers.dev/api/carrinho/calcular [200 OK, 996B, 39ms]
+  √  Status 200
+  √  frete = 19.9
+  √  freteGratis = false
+  √  valorFaltanteFreteGratis = 100
+  √  total = 119.9
+
+└ CT12 - R$ 199,80 (logo abaixo do limite)
+  POST https://verzel-store.qa-test-verzel-store.workers.dev/api/carrinho/calcular [200 OK, 1.1kB, 38ms]
+  √  Status 200
+  √  subtotal = 199.8
+  √  frete = 19.9
+  √  valorFaltanteFreteGratis = 0.2
+  √  total = 219.7
+
+└ CT14 - Acima de R$ 200,00
+  POST https://verzel-store.qa-test-verzel-store.workers.dev/api/carrinho/calcular [200 OK, 991B, 43ms]
+  √  Status 200
+  √  frete = 0
+  √  freteGratis = true
+  √  valorFaltanteFreteGratis = 0
+  √  total = 229.9
+
+└ CT15 - Frete grátis usa o subtotal antes do desconto
+  POST https://verzel-store.qa-test-verzel-store.workers.dev/api/carrinho/calcular [200 OK, 1.2kB, 39ms]
+  √  Status 200
+  √  subtotal = 219.8
+  √  desconto = 21.98
+  √  frete = 0
+  √  freteGratis = true
+  √  total = 197.82
+
+└ CT17 - Desconto não incide sobre o frete
+  POST https://verzel-store.qa-test-verzel-store.workers.dev/api/carrinho/calcular [200 OK, 1.1kB, 44ms]
+  √  Status 200
+  √  desconto = 10
+  √  frete = 19.9
+  √  total = 109.9
+
+└ CT26 - Arredondamento (3 x P001 com cupom)
+  POST https://verzel-store.qa-test-verzel-store.workers.dev/api/carrinho/calcular [200 OK, 1.1kB, 36ms]
+  √  Status 200
+  √  subtotal = 179.7
+  √  desconto = 17.97
+  √  total = 181.63
+  √  Todos os valores com no máximo 2 casas decimais
+
+□ 04 - Carrinho: validações e erros
+└ CT20 - 5 unidades (limite)
+  POST https://verzel-store.qa-test-verzel-store.workers.dev/api/carrinho/calcular [200 OK, 987B, 38ms]
+  √  Status 200
+  √  subtotal = 299.5
+
+└ CT37 - Quantidade 0
+  POST https://verzel-store.qa-test-verzel-store.workers.dev/api/carrinho/calcular [422 Unprocessable Entity, 910B, 36ms]
+  √  Status 422
+  √  Código de erro QUANTIDADE_INVALIDA
+  √  Campo itens[0].quantidade
+
+└ CT37 - Quantidade decimal
+  POST https://verzel-store.qa-test-verzel-store.workers.dev/api/carrinho/calcular [422 Unprocessable Entity, 900B, 38ms]
+  √  Status 422
+  √  Código de erro QUANTIDADE_INVALIDA
+  √  Campo itens[0].quantidade
+
+└ CT32 - Lista de itens vazia
+  POST https://verzel-store.qa-test-verzel-store.workers.dev/api/carrinho/calcular [422 Unprocessable Entity, 847B, 49ms]
+  √  Status 422
+  √  Código de erro ITENS_OBRIGATORIOS
+  √  Campo itens
+
+└ CT33 - Item que não é objeto
+  POST https://verzel-store.qa-test-verzel-store.workers.dev/api/carrinho/calcular [422 Unprocessable Entity, 881B, 39ms]
+  √  Status 422
+  √  Código de erro ITEM_INVALIDO
+  √  Campo itens[0]
+
+└ CT35 - Produto inexistente no item
+  POST https://verzel-store.qa-test-verzel-store.workers.dev/api/carrinho/calcular [422 Unprocessable Entity, 867B, 40ms]
+  √  Status 422
+  √  Código de erro PRODUTO_NAO_ENCONTRADO
+  √  Campo itens[0].produtoId
+
+└ CT36 - Produto duplicado
+  POST https://verzel-store.qa-test-verzel-store.workers.dev/api/carrinho/calcular [422 Unprocessable Entity, 871B, 40ms]
+  √  Status 422
+  √  Código de erro ITEM_DUPLICADO
+  √  Campo itens[1].produtoId
+
+└ CT29 - JSON inválido
+  POST https://verzel-store.qa-test-verzel-store.workers.dev/api/carrinho/calcular [400 Bad Request, 853B, 40ms]
+  √  Status 400
+  √  Código de erro JSON_INVALIDO
+
+└ CT31 - Método não permitido
+  GET https://verzel-store.qa-test-verzel-store.workers.dev/api/carrinho/calcular [405 Method Not Allowed, 847B, 38ms]
+  √  Status 405
+  √  Código de erro METODO_NAO_PERMITIDO
+
+└ CT30 - Rota inexistente
+  GET https://verzel-store.qa-test-verzel-store.workers.dev/api/xyz [404 Not Found, 851B, 54ms]
+  √  Status 404
+  √  Código de erro ROTA_NAO_ENCONTRADA
+
+□ 05 - Pedidos
+└ CT41 - Pedido válido com cupom
+  POST https://verzel-store.qa-test-verzel-store.workers.dev/api/pedidos [201 Created, 1.2kB, 38ms]
+  √  Status 201
+  √  Número no formato VZ-000000
+  √  CEP normalizado (só números)
+  √  subtotal = 100
+  √  desconto = 10
+  √  frete = 19.9
+  √  total = 109.9
+
+└ CT46 - CEP sem hífen
+  POST https://verzel-store.qa-test-verzel-store.workers.dev/api/pedidos [201 Created, 1.1kB, 39ms]
+  √  Status 201
+
+└ CT39 - Cupom inexistente
+  POST https://verzel-store.qa-test-verzel-store.workers.dev/api/pedidos [422 Unprocessable Entity, 832B, 54ms]
+  √  Status 422
+  √  Código de erro CUPOM_INVALIDO
+  √  Campo cupom
+
+└ CT40 - Cupom expirado
+  POST https://verzel-store.qa-test-verzel-store.workers.dev/api/pedidos [422 Unprocessable Entity, 835B, 36ms]
+  √  Status 422
+  √  Código de erro CUPOM_EXPIRADO
+  √  Campo cupom
+
+└ CT44 - Dados do cliente inválidos
+  POST https://verzel-store.qa-test-verzel-store.workers.dev/api/pedidos [422 Unprocessable Entity, 1.05kB, 37ms]
+  √  Status 422
+  √  Código de erro DADOS_INVALIDOS
+  √  Os 3 campos inválidos são listados
+
+□ 06 - Bugs (reprodução)
+└ BUG-01 (CT13) - Subtotal R$ 200,00 cobra frete
+  POST https://verzel-store.qa-test-verzel-store.workers.dev/api/carrinho/calcular [200 OK, 988B, 36ms]
+  √  Status 200
+  √  BUG-01 reproduzido: subtotal 200 cobra frete 19.9 (esperado 0)
+  √  Incoerência: valorFaltanteFreteGratis já é 0
+
+└ BUG-02 (CT21) - Cálculo aceita 6 unidades
+  POST https://verzel-store.qa-test-verzel-store.workers.dev/api/carrinho/calcular [200 OK, 981B, 38ms]
+  √  BUG-02 reproduzido: 6 unidades responde 200 (esperado 422)
+
+└ BUG-02 (CT22) - Pedido com 6 unidades é confirmado
+  POST https://verzel-store.qa-test-verzel-store.workers.dev/api/pedidos [201 Created, 1.11kB, 35ms]
+  √  BUG-02 reproduzido: pedido com 6 unidades responde 201 (esperado 422)
+
+└ BUG-03 (CT34) - Item sem produtoId
+  POST https://verzel-store.qa-test-verzel-store.workers.dev/api/carrinho/calcular [422 Unprocessable Entity, 872B, 37ms]
+  √  BUG-03 reproduzido: código PRODUTO_NAO_ENCONTRADO (esperado ITEM_INVALIDO)
+  √  BUG-03 reproduzido: mensagem expõe 'undefined'
+
+└ BUG-05 (CT68) - Nome só com números
+  POST https://verzel-store.qa-test-verzel-store.workers.dev/api/pedidos [201 Created, 1.11kB, 35ms]
+  √  BUG-05 reproduzido: nome '123 456' é aceito (esperado 422)
+
+└ BUG-06 (CT69) - E-mail com pontos seguidos
+  POST https://verzel-store.qa-test-verzel-store.workers.dev/api/pedidos [201 Created, 1.12kB, 41ms]
+  √  BUG-06 reproduzido: e-mail 'maria@exemplo..com' é aceito (esperado 422)
+
+┌─────────────────────────┬───────────────────┬───────────────────┐
+│                         │          executed │            failed │
+├─────────────────────────┼───────────────────┼───────────────────┤
+│              iterations │                 1 │                 0 │
+├─────────────────────────┼───────────────────┼───────────────────┤
+│                requests │                37 │                 0 │
+├─────────────────────────┼───────────────────┼───────────────────┤
+│            test-scripts │                37 │                 0 │
+├─────────────────────────┼───────────────────┼───────────────────┤
+│      prerequest-scripts │                 0 │                 0 │
+├─────────────────────────┼───────────────────┼───────────────────┤
+│              assertions │               123 │                 0 │
+├─────────────────────────┴───────────────────┴───────────────────┤
+│ total run duration: 4.6s                                        │
+├─────────────────────────────────────────────────────────────────┤
+│ total data received: 9.58kB (approx)                            │
+├─────────────────────────────────────────────────────────────────┤
+│ average response time: 43ms [min: 35ms, max: 159ms, s.d.: 19ms] │
+└─────────────────────────────────────────────────────────────────┘
