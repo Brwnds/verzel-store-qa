@@ -3,3 +3,11 @@ test-results/
 playwright-report/
 blob-report/
 playwright/.cache/
+
+# Jekyll (pré-visualização local do GitHub Pages)
+docs/_site/
+docs/.jekyll-cache/
+docs/.jekyll-metadata
+docs/Gemfile.lock
+docs/.bundle/
+docs/vendor/
