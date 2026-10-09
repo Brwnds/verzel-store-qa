@@ -1,0 +1,56 @@
+name: Testes
+
+on:
+  push:
+    branches: [main, develop]
+    # mudanças só de documentação não precisam rodar os testes de novo
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+# Sem agendamento (cron): o ambiente da loja é compartilhado com outros candidatos,
+# então os testes só rodam quando há alteração no código ou quando disparados manualmente.
+
+concurrency:
+  group: testes-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  testes:
+    name: Playwright (UI + API) e Postman
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+
+      - name: Instalar o Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Instalar o Chromium do Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Rodar testes Playwright
+        run: npm test
+
+      - name: Rodar coleção Postman (Newman)
+        if: success() || failure()
+        run: npm run test:postman
+
+      - name: Publicar relatório do Playwright
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-playwright
+          path: playwright-report/
+          retention-days: 14
