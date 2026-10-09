@@ -36,16 +36,17 @@ Validação da entrega **"Cupom de desconto e frete grátis"** (card VZS-142, v2
 
 ## Documentos
 
-| | Documento | Conteúdo |
+| # | Documento | Conteúdo |
 |---|---|---|
-| 📋 | [Relatório de execução](02-execucao.md) | Resultado dos 51 cenários dos critérios de aceite, sessões exploratórias e interpretações de ambiguidades |
-| 🔎 | [Testes complementares](05-testes-complementares.md) | 21 cenários além do exigido: navegação, celular, Firefox/Safari, teclado |
-| 🐞 | [Bugs](03-bugs.md) | Os 7 bugs com passos, esperado x obtido, análise e evidências |
-| 📸 | [Evidências](04-evidencias.md) | 47 screenshots organizados por cenário |
-| 🧾 | [Log da API](evidencias/api-log.md) | Requisição e resposta de cada chamada de API |
-| 🎭 | [Relatório do Playwright](relatorio-playwright/index.html) | Resultado interativo dos 46 testes automatizados, com screenshot de cada um |
-| 📮 | [Coleção Postman](postman/) | 37 requisições com 123 verificações ([baixar a coleção](postman/verzel-store.postman_collection.json)) |
-| 🥒 | [Cenários em Gherkin](https://github.com/Brwnds/verzel-store-qa/tree/main/docs/01-cenarios) | 72 cenários em 8 arquivos `.feature` |
+| 1. | [Cenários em Gherkin](https://github.com/Brwnds/verzel-store-qa/tree/main/docs/01-cenarios) | 72 cenários em 8 arquivos `.feature` |
+| 2. | [Relatório de execução](02-execucao.md) | Resultado dos 51 cenários dos critérios de aceite, sessões exploratórias e interpretações de ambiguidades |
+| 3. | [Testes complementares](05-testes-complementares.md) | 21 cenários além do exigido: navegação, celular, Firefox/Safari, teclado |
+| 4. | [Bugs](03-bugs.md) | Os 7 bugs com passos, esperado x obtido, análise e evidências |
+| 5. | [Evidências](04-evidencias.md) | 47 screenshots organizados por cenário |
+| 6. | [Log da API](evidencias/api-log.md) | Requisição e resposta de cada chamada de API |
+| 7. | [Relatório do Playwright](relatorio-playwright/index.html) | Resultado interativo dos 46 testes automatizados, com screenshot de cada um |
+| 8. | [Coleção Postman](postman/) | 37 requisições com 123 verificações ([baixar a coleção](postman/verzel-store.postman_collection.json)) |
+| 9. | [Pipeline de CI](https://github.com/Brwnds/verzel-store-qa/actions/workflows/testes.yml) | Execução automática dos testes Playwright e da coleção Postman no GitHub Actions |
 
 ## Como rodar a automação
 
